@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}用户登录 - EasyMart{% endblock %}
+
+{% block layout %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+    
+    .split-container {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+    }
+    
+    .split-left {
+        flex: 1;
+        background-image: url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        display: none;
+    }
+    
+    @media (min-width: 768px) {
+        .split-left {
+            display: block;
+        }
+    }
+    
+    .split-left-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(255, 80, 0, 0.4), rgba(255, 0, 54, 0.6));
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .split-left-overlay h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .split-left-overlay p {
+        font-size: 1.2rem;
+        max-width: 80%;
+        line-height: 1.6;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    .split-right {
+        flex: 1;
+        overflow-y: auto;
+        background: #ffffff;
+        padding: 2rem;
+    }
+    
+    .auth-box {
+        width: 100%;
+        max-width: 400px;
+        margin: 4rem auto;
+    }
+    
+    .auth-box .logo-text {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .auth-box h2 {
+        font-size: 1.5rem;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+    }
+    
+    .auth-box p.subtitle {
+        color: var(--text-muted);
+        margin-bottom: 2.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #555555;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: none;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 2px var(--primary);
+    }
+    
+    .btn-login {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(90deg, #ff9000 0%, #ff5000 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1rem;
+        box-shadow: 0 4px 15px rgba(255, 80, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 80, 0, 0.4);
+    }
+    
+    .auth-footer {
+        margin-top: 2rem;
+        text-align: center;
+        color: #888888;
+    }
+    
+    .auth-footer a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Ensure Toast is visible */
+    #toast-container {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        z-index: 1000;
+    }
+    
+    .back-btn {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .back-btn:hover {
+        color: var(--primary);
+    }
+</style>
+
+<div id="toast-container"></div>
+<a href="/" class="back-btn">返回首页</a>
+
+<div class="split-container">
+    <div class="split-left">
+        <div class="split-left-overlay">
+            <h1>EasyMart</h1>
+            <p>探索数百万优质商品，享受无与伦比的购物体验。立即登录，开启您的狂欢之旅！</p>
+        </div>
+    </div>
+    
+    <div class="split-right">
+        <div class="auth-box">
+            <div class="logo-text">EasyMart</div>
+            <h2>欢迎回来</h2>
+            <p class="subtitle">使用您的账号继续访问</p>
+            
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="请输入您的用户名" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="请输入密码" required>
+                </div>
+                
+                <button type="submit" class="btn-login">立即登录</button>
+            </form>
+            
+            <div class="auth-footer">
+                还没有账号？ <a href="/register">立即注册</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

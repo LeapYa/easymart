@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}在线商城{% endblock %}</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff5000;
+            --primary-hover: #e04400;
+            --secondary: #ff0036;
+            --bg-dark: #f4f4f4;
+            --card-bg: #ffffff;
+            --border-color: #ebebeb;
+            --text-light: #333333;
+            --text-muted: #999999;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', 'Noto Sans SC', sans-serif;
+            transition: all 0.2s ease-in-out;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        /* Taobao-style Navbar */
+        nav {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container a {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff5000 0%, #ff0036 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-light);
+            padding: 0.5rem 0.2rem;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-auth {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #ff9000 0%, #ff5000 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 80, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 80, 0, 0.3);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            background: #f9f9f9;
+            border-color: #cccccc;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            color: white;
+        }
+
+        .user-tag {
+            background: #f4f4f4;
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-tag .role-badge {
+            font-size: 0.75rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .role-buyer {
+            background: rgba(16, 185, 129, 0.1);
+            color: #047857;
+        }
+
+        .role-seller {
+            background: rgba(245, 158, 11, 0.1);
+            color: #b45309;
+        }
+
+        .role-admin {
+            background: rgba(239, 68, 68, 0.1);
+            color: #b91c1c;
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Solid Form Card */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .required-star {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 80, 0, 0.2);
+        }
+
+        /* Toast Messages */
+        #toast-container {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 280px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            background: var(--success);
+            border-left: 5px solid #047857;
+        }
+
+        .toast.error {
+            background: var(--danger);
+            border-left: 5px solid #b91c1c;
+        }
+
+        .toast.hide {
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .pagination a,
+        .pagination span {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 4px 10px !important;
+            margin: 2px !important;
+            font-size: 13px !important;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .pagination a:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination .active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            font-weight: bold;
+        }
+
+        .pagination .disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #f4f4f4;
+        }
+
+        /* Grid systems */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    {% block layout %}
+    <!-- Navbar -->
+    <nav>
+        <div class="logo-container">
+            <a href="/">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round" style="color: var(--secondary);">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                EasyMart
+            </a>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="/products" id="nav-products">商品浏览</a></li>
+            {% if user %}
+            {% if user.role == 'buyer' or user.role == 'admin' %}
+            <li><a href="/cart" id="nav-cart">我的购物车</a></li>
+            {% endif %}
+            <li><a href="/orders" id="nav-orders">我的订单</a></li>
+            {% if user.role == 'seller' or user.role == 'admin' %}
+            <li><a href="/seller/products" id="nav-seller-products">商品管理</a></li>
+            {% endif %}
+            {% if user.role == 'admin' %}
+            <li><a href="/admin/users" id="nav-admin-users">用户管理</a></li>
+            {% endif %}
+            {% endif %}
+        </ul>
+
+        <div class="nav-auth">
+            {% if user %}
+            <div class="user-tag">
+                <span class="username">{{ user.username }}</span>
+                <span class="role-badge role-{{ user.role }}">
+                    {% if user.role == 'buyer' %}买家
+                    {% elif user.role == 'seller' %}卖家
+                    {% elif user.role == 'admin' %}管理员
+                    {% endif %}
+                </span>
+            </div>
+            <a href="/profile" class="btn btn-secondary">个人中心</a>
+            <a href="/logout" class="btn btn-danger">退出</a>
+            {% else %}
+            <a href="/login" class="btn btn-secondary">登录</a>
+            <a href="/register" class="btn btn-primary">注册</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Messages Container -->
+    <div id="toast-container"></div>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 EasyMart 在线商城系统</p>
+        {% if icp_beian %}
+        <p style="margin-top: 0.3rem; font-size: 0.8rem;"><a href="https://beian.miit.gov.cn/" target="_blank"
+                rel="noopener noreferrer" style="color: var(--text-muted);">{{ icp_beian }}</a></p>
+        {% endif %}
+    </footer>
+    {% endblock %}
+
+    <script>
+        function showToast(message, type) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span><span style="cursor:pointer;margin-left:1rem;" onclick="this.parentElement.remove()">&times;</span>`;
+            container.appendChild(toast);
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 500);
+                }, 3000);
+            }
+        }
+
+        // Auto trigger backend flashes if they exist
+        window.addEventListener('DOMContentLoaded', () => {
+            {% if success %}
+            showToast("{{ success }}", "success");
+            {% endif %}
+            {% if errors %}
+            {% for err in errors %}
+            showToast("{{ err }}", "error");
+            {% endfor %}
+            {% endif %}
+        });
+
+        // Set active navbar tab based on URL path
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/products')) {
+            document.getElementById('nav-products')?.classList.add('active');
+        } else if (currentPath.includes('/cart')) {
+            document.getElementById('nav-cart')?.classList.add('active');
+        } else if (currentPath.includes('/orders')) {
+            document.getElementById('nav-orders')?.classList.add('active');
+        } else if (currentPath.includes('/seller/products')) {
+            document.getElementById('nav-seller-products')?.classList.add('active');
+        } else if (currentPath.includes('/admin/users')) {
+            document.getElementById('nav-admin-users')?.classList.add('active');
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

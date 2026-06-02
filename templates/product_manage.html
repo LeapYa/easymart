@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}商品管理控制台{% endblock %}
+
+{% block extra_css %}
+<style>
+    .manage-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5rem;
+    }
+    .manage-table th, .manage-table td {
+        padding: 0.85rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .manage-table th {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .product-thumbnail {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        object-fit: cover;
+        border: 1px solid var(--border-color);
+    }
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+    .badge-shelf { background: rgba(255, 80, 0, 0.1); color: #ff5000; }
+    .badge-offshelf { background: rgba(255, 0, 54, 0.1); color: #ff0036; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #ff5000 0%, #ff0036 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            卖家商品管理 console
+        </h1>
+        <a href="/seller/products/add" class="btn btn-primary">添加商品</a>
+    </div>
+    
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th>图片</th>
+                <th>商品名称</th>
+                <th>分类</th>
+                <th>价格 (元)</th>
+                <th>库存 (件)</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-thumbnail">
+                    </td>
+                    <td>
+                        <h4 style="font-size: 0.95rem; font-weight: 600;">{{ product.name }}</h4>
+                    </td>
+                    <td>{{ product.category }}</td>
+                    <td>￥{{ product.price }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td>
+                        {% if product.is_active == 1 %}
+                            <span class="badge badge-shelf">在售中</span>
+                        {% else %}
+                            <span class="badge badge-offshelf">已下架</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <a href="/products/{{ product.id }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">详情</a>
+                            <a href="/seller/products/edit/{{ product.id }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">编辑</a>
+                            
+                            <a href="/seller/products/toggle/{{ product.id }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px; color: var(--warning); border-color: rgba(255, 144, 0, 0.15);">
+                                {% if product.is_active == 1 %}下架{% else %}上架{% endif %}
+                            </a>
+                            
+                            <a href="/seller/products/delete/{{ product.id }}" class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">删除</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

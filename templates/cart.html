@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}我的购物车 - 简易商城{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+    .cart-table th, .cart-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .cart-table th {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .cart-item-detail {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .cart-item-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid var(--border-color);
+    }
+    .cart-qty-input {
+        width: 70px;
+        background: #f9f9f9;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 0.4rem;
+        color: white;
+        text-align: center;
+    }
+    .cart-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+    .cart-total-label {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+    }
+    .cart-total-val {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--secondary);
+    }
+    .cart-actions {
+        display: flex;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; background: linear-gradient(135deg, #ff5000 0%, #ff0036 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        我的购物车
+    </h1>
+    
+    {% if cart_items %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>商品信息</th>
+                    <th>单价</th>
+                    <th>数量</th>
+                    <th>小计</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <div class="cart-item-detail">
+                                <img src="{{ item.image_url }}" alt="{{ item.name }}" class="cart-item-img">
+                                <div>
+                                    <h4 style="font-size: 0.95rem; font-weight: 600;"><a href="/products/{{ item.product_id }}">{{ item.name }}</a></h4>
+                                    <span style="font-size: 0.8rem; color: var(--text-muted);">库存: {{ item.stock }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>￥{{ item.price }}</td>
+                        <td>
+                            <form action="/cart/update/{{ item.cart_id }}" method="POST" style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="number" name="quantity" class="cart-qty-input" value="{{ item.quantity }}">
+                                <button type="submit" class="btn btn-secondary" style="padding: 0.4rem 0.6rem; font-size: 0.8rem; border-radius: 6px;">修改</button>
+                            </form>
+                        </td>
+                        <td>￥{{ item.price * item.quantity }}</td>
+                        <td>
+                            <a href="/cart/delete/{{ item.cart_id }}" class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 6px;">删除</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="cart-summary">
+            <div>
+                <a href="/cart/clear" class="btn btn-secondary" style="color: var(--danger); border-color: rgba(255, 0, 54, 0.1);">清空购物车</a>
+            </div>
+            
+            <div style="text-align: right; display: flex; flex-direction: column; gap: 1rem; align-items: flex-end;">
+                <div>
+                    <span class="cart-total-label">总计：</span>
+                    <span class="cart-total-val">￥{{ total_price }}</span>
+                </div>
+                
+                <div class="cart-actions">
+                    <a href="/products" class="btn btn-secondary">继续购物</a>
+                    <form action="/checkout" method="POST">
+                        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 2rem;">立即下单</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 4rem 0; color: var(--text-muted);">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem; opacity: 0.5;"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <p style="font-size: 1.1rem; margin-bottom: 1rem;">您的购物车空空如也~</p>
+            <a href="/products" class="btn btn-primary">去选购商品</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

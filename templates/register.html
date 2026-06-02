@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}商城系统 - 注册账号{% endblock %}
+
+{% block layout %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+    
+    .split-container {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+    }
+    
+    .split-left {
+        flex: 1;
+        background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        display: none;
+    }
+    
+    @media (min-width: 768px) {
+        .split-left {
+            display: block;
+        }
+    }
+    
+    .split-left-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(255, 0, 54, 0.4), rgba(255, 80, 0, 0.6));
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .split-left-overlay h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .split-left-overlay p {
+        font-size: 1.2rem;
+        max-width: 80%;
+        line-height: 1.6;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    .split-right {
+        flex: 1;
+        overflow-y: auto;
+        background: #ffffff;
+        padding: 2rem;
+    }
+    
+    .auth-box {
+        width: 100%;
+        max-width: 440px;
+        margin: 4rem auto; /* Removes strict flex vertical centering that causes top crop */
+    }
+    
+    .auth-box .logo-text {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    
+    .auth-box h2 {
+        font-size: 1.5rem;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .auth-box p.subtitle {
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #555555;
+    }
+    
+    .required-star {
+        color: var(--secondary);
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border: none;
+        background-color: #f4f4f4;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 2px var(--primary);
+    }
+    
+    .btn-login {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(90deg, #ff9000 0%, #ff5000 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1rem;
+        box-shadow: 0 4px 15px rgba(255, 80, 0, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 80, 0, 0.4);
+    }
+    
+    .auth-footer {
+        margin-top: 2rem;
+        text-align: center;
+        color: #888888;
+    }
+    
+    .auth-footer a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    #toast-container {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        z-index: 1000;
+    }
+    
+    .back-btn {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .back-btn:hover {
+        color: var(--primary);
+    }
+</style>
+
+<div id="toast-container"></div>
+<a href="/" class="back-btn">返回首页</a>
+
+<div class="split-container">
+    <div class="split-left">
+        <div class="split-left-overlay">
+            <h1>加入 EasyMart</h1>
+            <p>全网最底价，正品保障。只需一分钟注册，开启海量商品购物体验。</p>
+        </div>
+    </div>
+    
+    <div class="split-right">
+        <div class="auth-box">
+            <div class="logo-text">EasyMart</div>
+            <h2>新用户注册</h2>
+            <p class="subtitle">填写以下信息加入我们</p>
+            
+            <form action="/register" method="POST">
+                <div class="form-group">
+                    <label for="username">用户名 <span class="required-star">*</span></label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="3-16位字符，仅支持字母数字" minlength="3" maxlength="16" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">密码 <span class="required-star">*</span></label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="6-16位字符，必须为字母数字组合" minlength="6" maxlength="16" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">确认密码 <span class="required-star">*</span></label>
+                    <input type="text" id="confirm_password" name="confirm_password" class="form-control" placeholder="请再次输入密码进行确认" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">电子邮箱 <span class="required-star">*</span></label>
+                    <input type="text" id="email" name="email" class="form-control" placeholder="请输入您的电子邮箱" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">手机号码 <span class="required-star">*</span></label>
+                    <input type="text" id="phone" name="phone" class="form-control" placeholder="请输入 11 位手机号码" minlength="11" maxlength="11" required>
+                </div>
+                
+                <button type="submit" class="btn-login">立即注册</button>
+            </form>
+            
+            <div class="auth-footer">
+                已有账号？ <a href="/login">直接登录</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

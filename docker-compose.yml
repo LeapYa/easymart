@@ -1,0 +1,10 @@
+services:
+  easymart:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./easymart.db:/app/easymart.db
+    environment:
+      - ICP_BEIAN=${ICP_BEIAN:-}
+    restart: unless-stopped

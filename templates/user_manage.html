@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}用户管理控制台{% endblock %}
+
+{% block extra_css %}
+<style>
+    .manage-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5rem;
+    }
+    .manage-table th, .manage-table td {
+        padding: 0.85rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .manage-table th {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1 style="font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #ff5000 0%, #ff0036 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            系统用户管理 console
+        </h1>
+    </div>
+    
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>电子邮箱</th>
+                <th>手机号码</th>
+                <th>系统角色</th>
+                <th>注册时间</th>
+                <th>管理操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+                <tr>
+                    <td>#{{ u.id }}</td>
+                    <td><b style="color: var(--text-light);">{{ u.username }}</b></td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.phone }}</td>
+                    <td>
+                        <span class="role-badge role-{{ u.role }}">
+                            {% if u.role == 'buyer' %}买家
+                            {% elif u.role == 'seller' %}卖家
+                            {% elif u.role == 'admin' %}管理员
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td>{{ u.created_at }}</td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <!-- Dropdown for role modification -->
+                            <form action="/admin/users/role/{{ u.id }}" method="POST" style="display: flex; gap: 0.3rem;">
+                                <select name="role" class="form-control" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; width: 90px; border-radius: 6px;">
+                                    <option value="buyer" {% if u.role == 'buyer' %}selected{% endif %}>买家</option>
+                                    <option value="seller" {% if u.role == 'seller' %}selected{% endif %}>卖家</option>
+                                    <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>管理员</option>
+                                </select>
+                                <button type="submit" class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; border-radius: 6px;">设角色</button>
+                            </form>
+                            
+                            {% if u.username != 'admin' %}
+                                <a href="/admin/users/delete/{{ u.id }}" class="btn btn-danger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; border-radius: 6px;">删除</a>
+                            {% else %}
+                                <span class="disabled" style="font-size: 0.8rem; color: var(--text-muted); cursor: not-allowed; padding: 0.35rem;">锁定</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

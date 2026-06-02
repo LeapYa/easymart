@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}个人中心 - 首页{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+    }
+    .profile-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(135deg, #ff5000 0%, #ff0036 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .info-display {
+        margin-bottom: 1.5rem;
+        background: rgba(0, 0, 0, 0.03);
+        border: 1px dashed var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.95rem;
+    }
+    .info-row span:first-child {
+        color: var(--text-muted);
+    }
+    .info-row span:last-child {
+        font-weight: 600;
+    }
+    @media (max-width: 768px) {
+        .profile-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-layout">
+    
+    <!-- Left Column: Edit Info -->
+    <div class="card">
+        <h2 class="profile-title">个人基本信息</h2>
+        
+        <div class="info-display">
+            <div class="info-row">
+                <span>系统用户名:</span>
+                <span>{{ user.username }}</span>
+            </div>
+            <div class="info-row">
+                <span>注册时间:</span>
+                <span>{{ user.created_at }}</span>
+            </div>
+            <div class="info-row">
+                <span>当前系统角色:</span>
+                <span class="role-badge role-{{ user.role }}" style="font-size: 0.8rem; font-weight: bold; border-radius: 4px; padding: 0.1rem 0.4rem;">
+                    {% if user.role == 'buyer' %}买家
+                    {% elif user.role == 'seller' %}卖家
+                    {% elif user.role == 'admin' %}管理员
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <form action="/profile/edit" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="email">
+                    电子邮箱 <span class="required-star">*</span>
+                </label>
+                <input type="text" id="email" name="email" class="form-control" value="{{ user.email }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="phone">
+                    <span class="required-star">*</span> 手机号码
+                </label>
+                <input type="text" id="phone" name="phone" class="form-control" value="{{ user.phone }}" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">保存</button>
+        </form>
+    </div>
+    
+    <!-- Right Column: Change Password -->
+    <div class="card">
+        <h2 class="profile-title">修改账户密码</h2>
+        
+        <form action="/profile/change_password" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="old_password">
+                    <span class="required-star">*</span> 原密码
+                </label>
+                <input type="password" id="old_password" name="old_password" class="form-control" placeholder="请输入当前密码" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="new_password">
+                    新密码 <span class="required-star">*</span>
+                </label>
+                <input type="password" id="new_password" name="new_password" class="form-control" placeholder="6-16位，仅支持字母与数字组合" minlength="6" maxlength="16" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="confirm_password">
+                    <span class="required-star">*</span> 确认新密码
+                </label>
+                <!-- Let's keep it password here, or let them input confirm text. Standard password type. -->
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="请再次输入新密码" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem; background: var(--secondary); box-shadow: 0 4px 15px rgba(244, 63, 148, 0.3);">确定</button>
+        </form>
+    </div>
+    
+</div>
+{% endblock %}

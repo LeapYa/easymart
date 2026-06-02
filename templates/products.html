@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}商品列表 - 在线商城{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Products Layout styling */
+    .products-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+    }
+    
+    /* Search Filter Panel */
+    .filter-panel {
+        height: fit-content;
+        position: sticky;
+        top: 5rem;
+    }
+    .filter-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(135deg, #ff5000 0%, #ff0036 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    /* Product Grid */
+    .product-grid-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    /* Product Card */
+    .product-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        box-shadow: var(--shadow);
+    }
+    .product-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 80, 0, 0.15);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .product-img-wrapper {
+        position: relative;
+        padding-top: 75%; /* 4:3 Aspect Ratio */
+        background: #1e293b;
+        overflow: hidden;
+    }
+    .product-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .product-badge {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background: var(--primary);
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    .product-badge.inactive {
+        background: var(--danger);
+    }
+    .product-info {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .product-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-light);
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .product-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+    .product-price {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--secondary);
+    }
+    .product-stock {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    
+    @media (max-width: 900px) {
+        .products-container {
+            grid-template-columns: 1fr;
+        }
+        .filter-panel {
+            position: relative;
+            top: 0;
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="products-container">
+    
+    <!-- Left Filter Panel -->
+    <div class="filter-panel card">
+        <h2 class="filter-title">商品检索</h2>
+        <form action="/products" method="GET">
+            <div class="form-group">
+                <label class="form-label" for="q">关键词</label>
+                <input type="text" id="q" name="q" class="form-control" placeholder="名称/类别" value="{{ q }}">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="category">商品分类</label>
+                <select id="category" name="category" class="form-control">
+                    <option value="">全部</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">价格区间 (元)</label>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="number" name="min_price" class="form-control" placeholder="最低" value="{{ min_price }}" step="0.01" style="padding: 0.5rem;">
+                    <span style="color: var(--text-muted);">-</span>
+                    <input type="number" name="max_price" class="form-control" placeholder="最高" value="{{ max_price }}" step="0.01" style="padding: 0.5rem;">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">查询</button>
+            <a href="/products" class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;">重置</a>
+        </form>
+    </div>
+    
+    <!-- Right Product Listing -->
+    <div class="product-grid-container">
+        
+        <!-- Product Grid Wrapper -->
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    <div class="product-img-wrapper">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-img">
+                        {% if product.is_active == 0 %}
+                            <span class="product-badge inactive">已下架</span>
+                        {% else %}
+                            <span class="product-badge">{{ product.category }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="product-info">
+                        <h3 class="product-title">{{ product.name }}</h3>
+                        <p class="product-desc">{{ product.description or '暂无商品描述。' }}</p>
+                        
+                        <div class="product-footer">
+                            <div>
+                                <span class="product-price">￥{{ product.price }}</span>
+                                <span class="product-stock">库存: {{ product.stock }}</span>
+                            </div>
+                            <a href="/products/{{ product.id }}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">详情</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination Component -->
+        {% if total_items > 0 %}
+            <div class="pagination">
+                <span class="disabled">共 {{ total_items }} 条商品</span>
+                <span class="active">第 {{ current_page }} 页 / 共 {{ total_pages }} 页</span>
+                
+                {% if current_page > 1 %}
+                    <a href="/products?page={{ current_page - 1 }}">&laquo; 上一页</a>
+                {% else %}
+                    <span class="disabled">&laquo; 上一页</span>
+                {% endif %}
+                
+                {% for p in range(1, (total_pages + 1) if total_pages > 0 else 2) %}
+                    <a href="/products?page={{ p }}" class="{% if current_page == p %}active{% endif %}">{{ p }}</a>
+                {% endfor %}
+                
+                {% if current_page < total_pages %}
+                    <a href="/products?page={{ current_page + 1 }}">下一页 &raquo;</a>
+                {% else %}
+                    <span class="disabled">下一页 &raquo;</span>
+                {% endif %}
+            </div>
+        {% endif %}
+        
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+easymart.db
+.idea/
+.vscode/
+*.swp
+*.swo
+server.log
