@@ -153,7 +153,7 @@ easymart/
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/你的用户名/easymart.git
+git clone https://github.com/LeapYa/easymart.git
 cd easymart
 
 # 2. 创建虚拟环境并安装依赖
@@ -177,7 +177,7 @@ nohup uvicorn app:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/你的用户名/easymart.git
+git clone https://github.com/LeapYa/easymart.git
 cd easymart
 
 # 2. 使用 Docker Compose 一键启动（可选传入备案号）
